@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+    crossorigin="anonymous"></script>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 600px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .boxs {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+    }
+
+    .box {
+      box-sizing: border-box;
+      border-radius: 5px;
+      padding: 10px;
+      flex: 1;
+      background-color: #e7e5e5;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 5px 5px;
+      min-height: 250px;
+    }
+
+    .ball {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #675858;
+      color: #fff;
+      user-select: none;
+    }
+
+    .btns {
+      margin-top: 20px;
+    }
+
+    button {
+      width: 100%;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .words {
+      margin-top: 20px;
+    }
+  </style>
+  <title>大樂透(隨機不重複)</title>
+</head>
+
+<body>
+  <div class="container">
+    <div class="boxs">
+      <div class="box left">
+        <!-- <div class="ball ball1">1</div> -->
+      </div>
+      <div class="box right">
+      </div>
+    </div>
+    <div class="btns">
+      <button id="b1">重置</button>
+      <button id="b2">從前面抽 1 顆，往後面放</button>
+      <button id="b3">從前面抽 1 顆，往前面放</button>
+      <button id="b4">從後面抽 1 顆，往後面放</button>
+      <button id="b5">從後面抽 1 顆，往前面放</button>
+    </div>
+    <div class="words"></div>
+  </div>
+
+  <script>
+    let ary;
+
+    reset();
+    // 重置 : 點擊後會重新生成數字並將其顯示在左側區域
+    $("#b1").on("click", e => reset());
+    $("#b2").on("click", e => $(".right").append($(".left .ball").eq(0))); 
+    $("#b3").on("click", e => $(".right").prepend($(".left .ball").first()));
+    $("#b4").on("click", e => $(".right").append($(".left .ball").last()));
+    $("#b5").on("click", e => $(".right").prepend($(".left .ball").eq($(".left .ball").length -1)));
+    
+    // 寫一個 function 來放球，因為放球的動作在一開始會有，在重置按鈕按了也會有，所以寫一個 function 來一起使用
+    function reset(){ 
+        $(".left").html("");
+        ary = randomList(46); // 在 function 中使用 randomList 這個 function，建立 1~46 的隨機不重複陣列，放在 ary 變數中
+        console.log(ary);
+        // forEach 的處理函數可以傳入索引值與內容值，內容值就是球面的數字，而索引值就當成球的流水編號
+        // 使用迴圈變數 forEach，建立 class 為 ball 及流水編號的 div，用 .appendTo() 放到 .left 左邊的箱子
+        ary.forEach((num, index) => $(`<div class="ball ball${index}">${num}</div>`).appendTo(".left"))
+       
+    }
+
+    // 準備了一個隨機不重複的 function，使用時放進最小數，最大數，及取用數量，並從中隨機選擇 count 個數字，保證每個數字不會重複
+    function randomList(max, min=1, count=max){ 
+        let leftBox = [];
+        let rightBox = [];
+        for (let i = min; i <=max; i++){
+            leftBox.push(i);
+        }
+        // console.log(leftBox);
+        // 抽一顆
+
+        // 生成的隨機數字會被放入 rightBox 中並從 leftBox 中刪除該數字
+        for(let i=0; i <count; i++){
+            let randomNum = Math.floor(Math.random()*leftBox.length);
+            rightBox.push(leftBox[randomNum]);
+            leftBox.splice(randomNum, 1);
+        }
+    
+        return rightBox;
+        }
+   
+
+  </script>
+</body>
+
+</html>
